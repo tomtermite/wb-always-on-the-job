@@ -379,7 +379,6 @@ function menuItemListener(link) {
         requestGet(admin_url + "document/get_my_folder/" + id_set).done(
           function (response) {
             response = JSON.parse(response);
-            console.log("response:", response);
             $(".share-row").removeClass("hide");
             $('#ShareModal [name="parent_id"]').val(response.parent_id);
             if (response.group_share_client == 2) {
@@ -418,7 +417,6 @@ function menuItemListener(link) {
                         id_set
                     ).done(function (response_client) {
                       response_client = JSON.parse(response_client);
-                      console.log('response_client:', response_client)
                       $('select[name="role_client[' + index + ']"]')
                         .val(response_client.role ? response_client.role : 1)
                         .selectpicker("refresh");

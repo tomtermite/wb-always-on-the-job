@@ -320,7 +320,7 @@ class Document_client extends ClientsController
         $this->db->where($searchQuery);
     }
     
- 
+    $this->db->where(db_prefix() . 'document_chapter.document_folder_id', $parent_id);
     $this->db->group_by(db_prefix() . 'document_chapter.id');
     $records = $this->db->get(db_prefix() . 'document_chapter')->num_rows();
     $totalRecordwithFilter = $records;

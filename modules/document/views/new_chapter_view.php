@@ -122,12 +122,10 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
                 if (firepad.isHistoryEmpty()) {
                     firepad.setText('Check out the user list to the top!');
                 }
-            });
-            firepad.on('synced', function(isSynced) {
                 var get_word_count = firepad.getText();
                 count_word = get_word_count.length;
-
             });
+           
         }
 
         // Helper to get hash from end of URL or generate a random one.

@@ -33,7 +33,6 @@ class Document_model extends App_Model
 	public function dq_tree_my_folder($root, $parent_id = '')
 	{
 		$share_detail = $this->get_share_detail($root['id']);
-
 		$tree_tr = '';
 		$class = "share-status";
 		$html_change = '<i class="fa fa-group ' . $class . '"></i>';
@@ -46,7 +45,7 @@ class Document_model extends App_Model
 		}
 		$status_share = $root['staffs_share'] != '' || $root['departments_share'] != '' || $root['clients_share'] != '' || $root['client_groups_share'] != '' ? $html_change : '';
 		if ($parent_id == '') {
-			$tree_tr .= '<tr class="right-menu-position" data-tt-id="' . $root['id'] . '" data-tt-name="' . $root['name'] . '" data-tt-type="' . $type . '">';
+			$tree_tr .= '<tr class="right-menu-position file_td" data-tt-id="' . $root['id'] . '" data-tt-name="' . $root['name'] . '" data-tt-type="' . $type . '">';
 			if ($root['type'] == 'file') {
 				$tree_tr .= '
 				<td>
@@ -65,27 +64,31 @@ class Document_model extends App_Model
 			<td>
 			<span>' . get_staff_full_name($root['staffid']) . '</span>
 			</td>';
-			$tree_tr .= '
-				<td>';
-			foreach ($share_detail['staffs_share'] as $key => $value) {
-				if ($share_detail['staffs_role'][$key] == 1) {
-					$type_role_staff = "View";
-				}else{
-					$type_role_staff = "Edit";
+			if (!empty($share_detail['staffs_share'])) {
+				$tree_tr .= '<td>';
+				foreach ($share_detail['staffs_share'] as $key => $value) {
+					if ($share_detail['staffs_role'][$key] == 1) {
+						$type_role_staff = "View";
+					} else {
+						$type_role_staff = "Edit";
+					}
+					$tree_tr .= '<ul><li>' . $value . ':' . $type_role_staff . '</li></ul>';
 				}
-				$tree_tr .= '<ul><li>' . $value . ':' . $type_role_staff . '</li></ul>';
+				$tree_tr .= '</td>';
 			}
-			$tree_tr .= '
-			<td>';
-			foreach ($share_detail['clients_share'] as $key => $value) {
-				if ($share_detail['clients_role'][$key] == 1) {
-					$type_role = "View";
-				} else {
-					$type_role = "Edit";
+			if (!empty($share_detail['clients_share'])) {
+				$tree_tr .= '<td>';
+
+				foreach ($share_detail['clients_share'] as $key => $value) {
+					if ($share_detail['clients_role'][$key] == 1) {
+						$type_role = "View";
+					} else {
+						$type_role = "Edit";
+					}
+					$tree_tr .= '<ul><li>' . $value . ':' . $type_role . '</li></ul>';
 				}
-				$tree_tr .= '<ul><li>' . $value . ':' . $type_role . '</li></ul>';
+				$tree_tr .= '</td>';
 			}
-			$tree_tr .= '</td>';
 		} else {
 
 			$tree_tr .= '<tr class="right-menu-position" data-tt-id="' . $root['id'] . '" data-tt-name="' . $root['name'] . '" data-tt-parent-id="' . $parent_id . '" data-tt-type="' . $type . '">';
@@ -105,29 +108,32 @@ class Document_model extends App_Model
 			<td>
 			<span>' . get_staff_full_name($root['staffid']) . '</span>
 			</td>';
-			$tree_tr .= '
+			if (!empty($share_detail['staffs_share'])) {
+				$tree_tr .= '
 				<td>';
-			foreach ($share_detail['staffs_share'] as $key => $value) {
-				if ($share_detail['staffs_role'][$key] == 1) {
-					$type_role_staff = "View";
-				}else{
-					$type_role_staff = "Edit";
+				foreach ($share_detail['staffs_share'] as $key => $value) {
+					if ($share_detail['staffs_role'][$key] == 1) {
+						$type_role_staff = "View";
+					} else {
+						$type_role_staff = "Edit";
+					}
+					$tree_tr .= '<ul><li>' . $value . ':' . $type_role_staff . '</li></ul>';
 				}
-				$tree_tr .= '<ul><li>' . $value . ':' . $type_role_staff . '</li></ul>';
+				$tree_tr .= '
+			</td>';
 			}
-			$tree_tr .= '
-			<td>';
-
-			$tree_tr .= '<td>';
-			foreach ($share_detail['clients_share'] as $key => $value) {
-				if ($share_detail['clients_role'][$key] == 1) {
-					$type_role = "View";
-				} else {
-					$type_role = "Edit";
+			if (!empty($share_detail['clients_share'])) {
+				$tree_tr .= '<td>';
+				foreach ($share_detail['clients_share'] as $key => $value) {
+					if ($share_detail['clients_role'][$key] == 1) {
+						$type_role = "View";
+					} else {
+						$type_role = "Edit";
+					}
+					$tree_tr .= '<ul><li>' . $value . ':' . $type_role . '</li></ul>';
 				}
-				$tree_tr .= '<ul><li>' . $value . ':' . $type_role . '</li></ul>';
+				$tree_tr .= '</td>';
 			}
-			$tree_tr .= '</td>';
 		}
 
 		$data = $this->get_my_folder_by_parent_id($root['id']);

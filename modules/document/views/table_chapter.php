@@ -5,16 +5,16 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 $aColumns = [
-    db_prefix() . 'document_chapter.id as chapter_id',
+    'ordered',
     'name',
     'number_of_words',
     'latest_version',
     db_prefix() . 'document_chapter.updated_at',
-    'ordered'
+   
 ];
 
 
-$sIndexColumn   = 'id';
+$sIndexColumn   = 'ordered';
 $sTable         = db_prefix() . 'document_chapter';
 $join = [
     'LEFT JOIN ' . db_prefix() . 'document_online_hash_share ON ', db_prefix() . 'document_online_hash_share.id_share = ' . db_prefix() . 'document_chapter.document_folder_id'
@@ -32,7 +32,7 @@ if ($this->ci->input->post('parent_id') > -1) {
 
 
 $result = data_tables_init($aColumns, $sIndexColumn, $sTable, $join, $where,[
-    'document_folder_id','pad_id', db_prefix().'document_online_hash_share.role','user_id'
+    'document_folder_id','pad_id', db_prefix().'document_online_hash_share.role','user_id', db_prefix() . 'document_chapter.id as chapter_id'
 ],'GROUP by ' . db_prefix() . 'document_chapter.id');
 
 $output  = $result['output'];
@@ -40,6 +40,7 @@ $output  = $result['output'];
 $rResult = $result['rResult'];
 
 foreach ($rResult as $aRow) {
+
     $row = [];
     for ($i = 0; $i < count($aColumns); ++$i) {
         $name = '';   

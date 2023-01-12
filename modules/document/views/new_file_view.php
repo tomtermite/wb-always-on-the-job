@@ -11,10 +11,6 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 				<div class="_filters _hidden_inputs">
 					<?php echo form_hidden('parent_id', $parent_id); ?>
 				</div>
-				<?php if (is_admin()) { ?>
-					<span class="label label-default cursor setting-sent-notifications"><i class="fa fa-cog" aria-hidden="true"></i></span>
-				<?php } ?>
-				</h4>
 				<a href="<?php echo admin_url('document/new_chapter/' . $parent_id); ?>" class="btn add_chapter btn-info">
 					<i class="fa fa-plus"></i> <?php echo _l('add_chapter'); ?>
 				</a>
@@ -35,7 +31,6 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 							_l('chapter_title'),
 							_l('number_of_words'),
 							_l('latest_version'),
-							_l('date_last_edited'),
 							_l('date_last_edited'),
 						];
 
@@ -60,10 +55,11 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 			ProjectsServerParams[$(this).attr('name')] = '[name="' + $(this).attr('name') + '"]';
 		});
 		
-		_table_api = initDataTable('.table-document', admin_url + 'document/table', undefined, undefined, ProjectsServerParams,[5,'asc']);
+		_table_api = initDataTable('.table-document', admin_url + 'document/table', undefined, undefined, ProjectsServerParams);
 
 		// $('.table-document').column(5).visible(false, false).columns.adjust();
-		_table_api.column(5).visible(false, false).columns.adjust();
+		// _table_api.column(5).visible(false, false).columns.adjust();
+		_table_api.buttons( 0, null ).remove();
 	});
 
 	function delete_chapter(id) {

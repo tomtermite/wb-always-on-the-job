@@ -201,18 +201,18 @@
     }
   });
 
-  $("#document-advanced .tr-pointer").on("click", function () {
-    var id = $(this).parents("tr").data("tt-id");
-    var type = $(this).parents("tr").data("tt-type");
-    var parent_id = $(this).parents("tr").data("tt-parent-id");
+  $("#document-advanced .file_td").on("click", function () {
+    var id = $(this).data("tt-id");
+    var type =$(this).data("tt-type");
+    var parent_id =$(this).data("tt-parent-id");
     parent_id = typeof parent_id == "undefined" ? 0 : parent_id;
     $('#share-form input[name="id"]').val(id);
     $('#ShareModal input[name="parent_id"]').val(parent_id);
     $('#related-form input[name="id"]').val(id);
 
     if (type == "file") {
-      var parent_id = $(this).parents("tr").data("tt-parent-id");
-      var id_set = $(this).parents("tr").data("tt-id");
+      var parent_id =$(this).data("tt-parent-id");
+      var id_set =$(this).data("tt-id");
       id = "";
     }
     $('#AddFolderModal input[name="parent_id"]').val(id);
