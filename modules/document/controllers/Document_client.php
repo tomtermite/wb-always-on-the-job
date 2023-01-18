@@ -264,163 +264,173 @@ class Document_client extends ClientsController
     }
 
     	/**
-	 * new file view 
-	 * @param  int $parent_id 
-	 * @param  int $id        
-	 * @return  view or json            
-	 */
-	public function client_file_view($parent_id)
-	{
-		$data['title'] = _l('new_file');
-		$data['parent_id'] = $parent_id;
+       * new file view 
+       * @param  int $parent_id 
+       * @param  int $id        
+       * @return  view or json            
+       */
+      public function client_file_view($parent_id)
+      {
+        $data['title'] = _l('new_file');
+        $data['parent_id'] = $parent_id;
 
-		if (!isset($success)) {
-      $this->data($data);
-      $this->view('clients/client_file_view');
-      $this->layout();
-		}
-	}
-
-  /** table for new file */
-	public function table()
-	{
-    $response = array();
-
-    ## Read value
-
-    $postData = $this->input->post();
-  
-    $draw = $postData['draw'];
-    $start = $postData['start'];
-    $rowperpage = $postData['length']; // Rows display per page
-    $columnIndex = $postData['order'][0]['column']; // Column index
-    $columnName = $postData['columns'][$columnIndex]['data']; // Column name
-    $columnSortOrder = $postData['order'][0]['dir']; // asc or desc
-    $parent_id = $postData['parent_id'];
-    $searchValue = $postData['search']['value'];
-
-
-   ## Search 
-   $searchQuery = "";
-   if ($searchValue != '') {
-       $searchQuery = " (name like '%" . $searchValue . "%' or number_of_words like '%" . $searchValue . "%' or latest_version like'%" . $searchValue . "%' ) ";
-   }
-
-    ## Total number of records without filtering
-    // $this->db->select('count(*) as allcount');
-    $this->db->where(db_prefix() . 'document_chapter.document_folder_id', $parent_id);
-    $this->db->group_by(db_prefix() . 'document_chapter.id');
-    $records = $this->db->get(db_prefix() . 'document_chapter')->num_rows();
-
-    $totalRecords = $records;
-
-    ## Total number of record with filtering
-    // $this->db->select('count(*) as allcount');
-    if ($searchQuery != '') {
-        $this->db->where($searchQuery);
-    }
-    
-    $this->db->where(db_prefix() . 'document_chapter.document_folder_id', $parent_id);
-    $this->db->group_by(db_prefix() . 'document_chapter.id');
-    $records = $this->db->get(db_prefix() . 'document_chapter')->num_rows();
-    $totalRecordwithFilter = $records;
-
-    ## Fetch records
-    $this->db->select(db_prefix() . 'document_chapter.*,'. db_prefix(). 'document_online_hash_share.role');
-    if ($searchQuery != '') {
-        $this->db->where($searchQuery);
-    }
-
-    $this->db->where(db_prefix() . 'document_chapter.document_folder_id', $parent_id);
-    $this->db->where(db_prefix() . 'document_online_hash_share.rel_id', get_client_user_id());
-    $this->db->join(db_prefix() . 'document_online_hash_share', db_prefix() . 'document_online_hash_share.id_share = ' . db_prefix() . 'document_chapter.document_folder_id ', 'left');
-
-    $this->db->order_by($columnName, $columnSortOrder);
-    $this->db->limit($rowperpage, $start);
-    $this->db->group_by(db_prefix() . 'document_chapter.id');
-    $records = $this->db->get(db_prefix() . 'document_chapter')->result();
-
-    $data = array();
-    foreach ($records as $record) {
-      $action_tag = '';
-      if($record->role == 1){
-             $action_tag .= '<a href="'.site_url('document/document_client/view_chapter/'.$record->id.'/'.$record->pad_id).'">View</a><br>'; 
-      }else{
-        $action_tag .= '<a href="'.site_url('document/document_client/edit_chapter/'.$record->id.'/'.$record->pad_id).'">Edit</a><br>'; 
+        if (!isset($success)) {
+          $this->data($data);
+          $this->view('clients/client_file_view');
+          $this->layout();
+        }
       }
-        $data[] = array(
-            "id" => $record->id,
-            "name" => $record->name,
-            "number_of_words" => $record->number_of_words,
-            "latest_version" => $record->latest_version,
-            "updated_at" => $record->updated_at,
-           
-            "action" => $action_tag,
+
+      /** table for new file */
+      public function table()
+      {
+        $response = array();
+
+        ## Read value
+
+        $postData = $this->input->post();
+      
+        $draw = $postData['draw'];
+        $start = $postData['start'];
+        $rowperpage = $postData['length']; // Rows display per page
+        $columnIndex = $postData['order'][0]['column']; // Column index
+        $columnName = $postData['columns'][$columnIndex]['data']; // Column name
+        $columnSortOrder = $postData['order'][0]['dir']; // asc or desc
+        $parent_id = $postData['parent_id'];
+        $searchValue = $postData['search']['value'];
+
+
+      ## Search 
+      $searchQuery = "";
+      if ($searchValue != '') {
+          $searchQuery = " (name like '%" . $searchValue . "%' or number_of_words like '%" . $searchValue . "%' or latest_version like'%" . $searchValue . "%' ) ";
+      }
+
+        ## Total number of records without filtering
+        // $this->db->select('count(*) as allcount');
+        $this->db->where(db_prefix() . 'document_chapter.document_folder_id', $parent_id);
+        $this->db->group_by(db_prefix() . 'document_chapter.id');
+        $records = $this->db->get(db_prefix() . 'document_chapter')->num_rows();
+
+        $totalRecords = $records;
+
+        ## Total number of record with filtering
+        // $this->db->select('count(*) as allcount');
+        if ($searchQuery != '') {
+            $this->db->where($searchQuery);
+        }
+        
+        $this->db->where(db_prefix() . 'document_chapter.document_folder_id', $parent_id);
+        $this->db->group_by(db_prefix() . 'document_chapter.id');
+        $records = $this->db->get(db_prefix() . 'document_chapter')->num_rows();
+        $totalRecordwithFilter = $records;
+
+        ## Fetch records
+        $this->db->select(db_prefix() . 'document_chapter.*');
+        if ($searchQuery != '') {
+            $this->db->where($searchQuery);
+        }
+
+        $this->db->where(db_prefix() . 'document_chapter.document_folder_id', $parent_id);
+        $this->db->order_by($columnName, $columnSortOrder);
+        $this->db->limit($rowperpage, $start);
+        $this->db->group_by(db_prefix() . 'document_chapter.id');
+        $records = $this->db->get(db_prefix() . 'document_chapter')->result();
+
+        $data = array();
+        foreach ($records as $record) {
+          $action_tag = '';
+          if($record->role == 1){
+                $action_tag .= '<a href="'.site_url('document/document_client/view_chapter/'.$record->id.'/'.$record->pad_id).'">View</a><br>'; 
+          }else{
+            $action_tag .= '<a href="'.site_url('document/document_client/edit_chapter/'.$record->id.'/'.$record->pad_id).'">Edit</a><br>'; 
+          }
+            $data[] = array(
+                "id" => $record->id,
+                "name" => $record->name,
+                "number_of_words" => $record->number_of_words,
+                "latest_version" => $record->latest_version,
+                "updated_at" => $record->updated_at,
+              
+                "action" => $action_tag,
+            );
+        }
+
+        ## Response
+        $response = array(
+            "draw" => intval($draw),
+            "iTotalRecords" => $totalRecords,
+            "iTotalDisplayRecords" => $totalRecordwithFilter,
+            "aaData" => $data
         );
-    }
 
-    ## Response
-    $response = array(
-        "draw" => intval($draw),
-        "iTotalRecords" => $totalRecords,
-        "iTotalDisplayRecords" => $totalRecordwithFilter,
-        "aaData" => $data
-    );
-
-    echo json_encode($response);
-	}
+        echo json_encode($response);
+      }
 
 
-	public function edit_chapter($id)
-	{
-		$all_data = $this->document_model->get_my_chapter_by_chapter_id($id);
+      public function edit_chapter($id)
+      {
+        $all_data = $this->document_model->get_my_chapter_by_chapter_id($id);
 
-		$data['id'] = $all_data->id;
-		$data['parent_id'] = $all_data->document_folder_id;
-		$data['file_name'] = $all_data->name;
-		$data['pad_id'] = $all_data->pad_id;
-		$data['type'] = "edit";
-    $this->data($data);
-    $this->view('clients/client_chapter_view');
-    $this->layout();
-		
-	}
-  public function view_chapter($id)
-	{
-		$all_data = $this->document_model->get_my_chapter_by_chapter_id($id);
-		$data['id'] = $all_data->id;
-		$data['parent_id'] = $all_data->document_folder_id;
-		$data['file_name'] = $all_data->name;
-		$data['pad_id'] = $all_data->pad_id;
-		$data['type'] = "view";
+        $data['id'] = $all_data->id;
+        $data['parent_id'] = $all_data->document_folder_id;
+        $data['file_name'] = $all_data->name;
+        $data['pad_id'] = $all_data->pad_id;
+        $data['description'] = $all_data->description;
+        $data['version'] = $all_data->latest_version;
+        $data['type'] = "edit";
+        $this->data($data);
+        $this->view('clients/client_chapter_view');
+        $this->layout();
+        
+      }
 
-    $this->data($data);
-    $this->view('clients/client_chapter_view');
-    $this->layout();
-	}
-  public function add_chapter()
-	{
-		$result['status'] = 0;
-		$data = $_POST;
-		if ($data['id'] == '') {
-			$id = $this->document_model->add_chapter($data);
-			if ($id) {
-				$result['status'] = 1;
-				$result['message'] = _l('added_successfully');
-			} else {
-				$result['message'] = _l('added_fail');
-			}
-		} else {
-			$res = $this->document_model->edit_chapter($data);
-			if ($res == true) {
-				$result['message'] = _l('updated_successfully');
-				$result['status'] = 1;
-			} else {
-				$result['message'] = _l('updated_fail');
-			}
-		}
-		echo json_encode($result);
-		die;
-	}
+      public function view_chapter($id)
+      {
+        $all_data = $this->document_model->get_my_chapter_by_chapter_id($id);
+        $data['id'] = $all_data->id;
+        $data['parent_id'] = $all_data->document_folder_id;
+        $data['file_name'] = $all_data->name;
+        $data['pad_id'] = $all_data->pad_id;
+        $data['description'] = $all_data->description;
+        $data['version'] = $all_data->latest_version;
+        $data['type'] = "view";
+
+        $this->data($data);
+        $this->view('clients/client_chapter_view');
+        $this->layout();
+      }
+
+      public function update_chapter()
+      {
+        $result['status'] = 0;
+        $data = $this->input->post();
+        if(!empty($data))
+        {
+          $chapter_data = $this->document_model->get_my_chapter_by_chapter_id($data['id']);
+
+          $data['latest_version'] = $chapter_data->latest_version;
+          $res = $this->document_model->edit_chapter($data);
+          if ($res == true) {
+
+            $version = $chapter_data->latest_version + 1;
+            $version_data = [];
+            $version_data['client_id'] = get_client_user_id();
+            $version_data['document_chapter_id'] = $data['id'];
+            $version_data['version'] = $version;
+            $version_data['description'] = $data['description'];
+            $this->document_model->add_chapter_version($version_data);
+            
+            $result['message'] = _l('updated_successfully');
+            $result['status'] = 1;
+            $result['version'] = $version;
+          } else {
+            $result['message'] = _l('updated_fail');
+          }
+        }
+        
+        echo json_encode($result);
+        die;
+      }
 
   }

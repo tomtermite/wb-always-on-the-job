@@ -51,6 +51,7 @@ if (!$CI->db->table_exists(db_prefix() . 'document_chapter')) {
       `pad_id` varchar(250) NOT NULL,
       `user_id` int(11) NOT NULL,
       `name` TEXT NOT NULL,
+      `description` LONGTEXT NULL,
       `number_of_words` BIGINT  NULL,
       `latest_version` BIGINT  NULL,
       `ordered` int(11)  NULL,
@@ -58,6 +59,19 @@ if (!$CI->db->table_exists(db_prefix() . 'document_chapter')) {
       `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=" . $CI->db->char_set . ';');
+}
+
+if (!$CI->db->table_exists(db_prefix() . 'document_chapter_version')) {
+  $CI->db->query('CREATE TABLE `'. db_prefix() .'document_chapter_version` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `document_chapter_id` int(11) NOT NULL,
+    `staff_id` int(11) NOT NULL,
+    `client_id` int(11) NOT NULL,
+    `description` LONGTEXT NULL,
+    `version` int(11) NOT NULL,
+    `inserted_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
+  ) ENGINE=MyISAM DEFAULT CHARSET='.$CI->db->char_set.';');
 }
 
 if (!$CI->db->table_exists(db_prefix() . 'document_online_related')) {

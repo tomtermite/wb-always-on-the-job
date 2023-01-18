@@ -153,3 +153,7 @@ table#document-advanced {
     background-repeat: no-repeat;
     padding: .2em 0 .2em 1.5em;
 }
+
+.height-500{
+    height: 500px !important;
+}

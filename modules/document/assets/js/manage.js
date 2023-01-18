@@ -3,13 +3,16 @@
   $(document).ready(function () {
     $.Shortcuts.stop();
   });
+  
+  appValidateForm($("#add-edit-file-form"), {
+    name: "required",
+  }, save_files, {name : "File name is required."});
+
   appValidateForm($("#add-edit-folder-form"), {
     name: "required",
-  });
+  }, save_folder, {name : "Folder name is required."});
 
-  appValidateForm($("#share-form"), {
-    id: "required",
-  });
+  appValidateForm($("#share-form"), {}, save_share);
 
   appValidateForm($("#related-form"), {
     id: "required",
@@ -691,3 +694,91 @@ function onchane_handle_department_document(index, staff_share){
    }
  })
  }
+
+ function save_files(form) {
+  var data = $(form).serialize();
+  var url = form.action;
+  $.post(url, data).done(function(response) {
+      response = JSON.parse(response);
+      if (response.status == 1) {
+          alert_float('success', response.message);
+      } else {
+        alert_float('error', response.error);
+      }
+      $('#AddFileModal').modal('hide');
+      $("#add-edit-file-form")[0].reset();
+      get_my_folder_list();
+  });
+  return false;
+}
+
+function save_folder(form) {
+  var data = $(form).serialize();
+  var url = form.action;
+  $.post(url, data).done(function(response) {
+      response = JSON.parse(response);
+      if (response.status == 1) {
+          alert_float('success', response.message);
+      } else {
+        alert_float('error', response.error);
+      }
+      $('#AddFolderModal').modal('hide');
+      $("#add-edit-folder-form")[0].reset();
+      get_my_folder_list();
+  });
+  return false;
+}
+
+function save_share(form) {
+  var data = $(form).serialize();
+  var url = form.action;
+  $.post(url, data).done(function(response) {
+      response = JSON.parse(response);
+      if (response.status == 1) {
+          alert_float('success', response.message);
+      } else {
+        alert_float('error', response.error);
+      }
+      $('#sharedetailModal').modal('hide');
+      $("#add-edit-folder-form")[0].reset();
+      get_my_folder_list();
+  });
+  return false;
+}
+
+ /*function refreshJS()
+ {
+    alert("TEst");
+    appValidateForm($("#add-edit-folder-form"), {
+      name: "required",
+    }, add_files);
+    //This is for add file model
+    /*$('form[id="second_form"]').validate({
+      rules:{
+        fname:'required',
+        lname:'required',
+        user_email:{
+          required:true,
+          email:true,
+        },
+        psword:{
+          required:true,
+          minlength:8,
+        }
+      },
+      messages:{
+        fname:'This field is required',
+        lname:'This field is required',
+        user_email:'Enter a valid email',
+          psword:{
+          minlength:'Password must be at least 8 characters long'
+        },
+        submitHandler:function(form){
+          form.submit();
+
+        }
+      }
+    });
+ }*/
+
+ 

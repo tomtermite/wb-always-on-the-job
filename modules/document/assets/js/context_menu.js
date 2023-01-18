@@ -360,10 +360,12 @@ function menuItemListener(link) {
           response = JSON.parse(response);
           if (response.success == true) {
             alert_float("success", response.message);
-            window.location.replace(admin_url + "document/manage");
+            get_my_folder_list();
+            // window.location.replace(admin_url + "document/manage");
           } else {
             alert_float("warning", response.message);
-            window.location.replace(admin_url + "document/manage");
+            get_my_folder_list();
+            // window.location.replace(admin_url + "document/manage");
           }
         }
       );

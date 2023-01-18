@@ -43,35 +43,51 @@ class Document extends AdminController
 		$this->load->view('manage', $data);
 	}
 
+	/*
+	get_my_folder()
+	*/
+	public function get_my_folder_list()
+	{
+		$response = [];
+		$response['status'] = 1;
+
+		$folder_my_tree = $this->document_model->tree_my_folder();
+		$response['content'] = html_entity_decode($folder_my_tree);
+
+		echo json_encode($response);
+	}
+
 	/**
 	 * Add edit folder
 	 */
 	public function add_edit_folder()
 	{
+		$response = [];
+		$response['status'] = 0;
+
 		if ($this->input->post()) {
 			$data = $this->input->post();
 			if ($data['id'] == '') {
 				$data['type'] = 'folder';
 				$id = $this->document_model->add_folder($data);
 				if (is_numeric($id)) {
-					$message = _l('added_successfully');
-					set_alert('success', $message);
+					$response['status'] = 1;
+					$response['message'] = _l('document_folder_added_successfully');
 				} else {
-					$message = _l('added_fail');
-					set_alert('warning', $message);
+					$response['error'] = _l('added_fail');
 				}
 			} else {
 				$data['type'] = 'folder';
-				$res = $this->document_model->edit_folder($data);
-				if ($res == true) {
-					$message = _l('updated_successfully');
-					set_alert('success', $message);
+				if ($this->document_model->edit_folder($data)) {
+					$response['status'] = 1;
+					$response['message'] = _l('document_folder_updated_successfully');
 				} else {
-					$message = _l('updated_fail');
-					set_alert('warning', $message);
+					$response['error'] = _l('updated_fail');
 				}
 			}
-			redirect(admin_url('document/manage?tab=my_folder'));
+
+			echo json_encode($response);exit;
+			// redirect(admin_url('document/manage?tab=my_folder'));
 		}
 	}
 
@@ -80,31 +96,32 @@ class Document extends AdminController
 	 */
 	public function add_edit_file()
 	{
+		$response = [];
+		$response['status'] = 0;
+
 		if ($this->input->post()) {
 			$data = $this->input->post();
 			if ($data['id'] == '') {
 				$data['type'] = 'file';
 				$id = $this->document_model->add_folder($data);
 				if (is_numeric($id)) {
-					$message = _l('added_successfully');
-					set_alert('success', $message);
+					$response['status'] = 1;
+					$response['message'] = _l('document_file_added_successfully');
 				} else {
-					$message = _l('added_fail');
-					set_alert('warning', $message);
+					$response['error'] = _l('added_fail');
 				}
 			} else {
 				$data['type'] = 'file';
 				$res = $this->document_model->edit_folder($data);
 				if ($res == true) {
-					$message = _l('updated_successfully');
-					set_alert('success', $message);
+					$response['message'] = _l('document_file_updated_successfully');
 				} else {
-					$message = _l('updated_fail');
-					set_alert('warning', $message);
+					$response['error'] = _l('updated_fail');
 				}
 			}
-			redirect(admin_url('document/manage?tab=my_folder'));
+			//redirect(admin_url('document/manage?tab=my_folder'));
 		}
+		echo json_encode($response);exit;
 	}
 
 	public function document_online_setting()
@@ -192,20 +209,50 @@ class Document extends AdminController
 	public function add_chapter()
 	{
 		$result['status'] = 0;
+		$version = 1;
 		$data = $_POST;
 		if ($data['id'] == '') {
 			$id = $this->document_model->add_chapter($data);
 			if ($id) {
+				//This is to add version
+				$version_data = [];
+				$version_data['staff_id'] = get_staff_user_id();
+				$version_data['document_chapter_id'] = $id;
+				$version_data['version'] = $version;
+				$version_data['description'] = $data['description'];
+				$this->document_model->add_chapter_version($version_data);
+
 				$result['status'] = 1;
 				$result['message'] = _l('added_successfully');
+				$result['version'] = $version;
+				$result['id'] = $id;
 			} else {
 				$result['message'] = _l('added_fail');
 			}
 		} else {
+
+			$chapter_data = $this->document_model->get_my_chapter_by_chapter_id($data['id']);
+
+			$data['latest_version'] = $chapter_data->latest_version;
 			$res = $this->document_model->edit_chapter($data);
 			if ($res == true) {
-				$result['message'] = _l('updated_successfully');
+
+				//This is to add version
+				// if(isset($chapter_data->description) && $chapter_data->description != $data['description'])
+				// {
+					$version = $chapter_data->latest_version + 1;
+					$version_data = [];
+					$version_data['staff_id'] = get_staff_user_id();
+					$version_data['document_chapter_id'] = $data['id'];
+					$version_data['description'] = $data['description'];
+					$version_data['version'] = $version;
+					$this->document_model->add_chapter_version($version_data);
+				// }
+
+				$result['message'] = _l('document_updated_successfully');
 				$result['status'] = 1;
+				$result['version'] = $version;
+				$result['id'] = $data['id'];
 			} else {
 				$result['message'] = _l('updated_fail');
 			}
@@ -223,6 +270,7 @@ class Document extends AdminController
 		$data['pad_id'] = $all_data->pad_id;
 		$data['version'] = $all_data->latest_version;
 		$data['type'] = "edit";
+		$data['description'] = $all_data->description;
 		$this->load->view('new_chapter_view', $data);
 	}
 
@@ -234,6 +282,9 @@ class Document extends AdminController
 		$data['file_name'] = $all_data->name;
 		$data['pad_id'] = $all_data->pad_id;
 		$data['type'] = "view";
+		$data['description'] = $all_data->description;
+		$data['version'] = $all_data->latest_version;
+		
 		$this->load->view('new_chapter_view', $data);
 	}
 	public function delete_chapter($id)
@@ -275,80 +326,90 @@ class Document extends AdminController
 	 */
 	public function update_share_document_online()
 	{
+
+		$response = [];
+		$response['status'] = 0;
 		$data = $this->input->post();
-		$success = $this->document_model->update_share($data);
+		if(!empty($data))
+		{
+			$success = $this->document_model->update_share($data);
 
-		$staff_notification = get_option('document_staff_notification');
-		$staff_sent_email = get_option('document_email_templates_staff');
-		$client_notification = get_option('document_client_notification');
-		$client_sent_email = get_option('document_email_templates_client');
+			$staff_notification = get_option('document_staff_notification');
+			$staff_sent_email = get_option('document_email_templates_staff');
+			$client_notification = get_option('document_client_notification');
+			$client_sent_email = get_option('document_email_templates_client');
 
-		if ($success == true) {
-			$message = _l('updated_successfully');
-			set_alert('success', $message);
-			if (count($data['staffs_share']) > 0) {
-				if ($data['staffs_share'][0] != '') {
-					foreach ($data['staffs_share'] as $key => $value) {
-						$this->db->where('id', $data['id']);
-						$share = $this->db->get(db_prefix() . 'document_online_my_folder')->row();
+			if ($success == true) {
+				// $message = _l('updated_successfully');
+				// set_alert('success', $message);
+				if (count($data['staffs_share']) > 0) {
+					if ($data['staffs_share'][0] != '') {
+						foreach ($data['staffs_share'] as $key => $value) {
+							$this->db->where('id', $data['id']);
+							$share = $this->db->get(db_prefix() . 'document_online_my_folder')->row();
 
-						$share->receiver = document_email_staff_document($value);
-						$share->staff_share_id = $value;
+							$share->receiver = document_email_staff_document($value);
+							$share->staff_share_id = $value;
 
-						$share->type_template = "staff_template";
+							$share->type_template = "staff_template";
 
-						if ($staff_sent_email == 1) {
-							$template = mail_template('document_share', 'document', array_to_object($share));
-							$template->send();
-						}
-
-						if ($staff_notification == 1) {
-							$link = '';
-							$link = 'document_online/new_file_view/' . $data['parent_id'] . '/' . $data['id'];
-							$string_sub = get_staff_full_name($value) . ' ' . _l('share') . ' ' . $share->type . ' ' . $share->name . ' ' . _l('for_you');
-							$this->document_model->notifications($value, $link, strtolower($string_sub));
-						}
-					}
-				}
-			}
-
-			if (count((array)$data['clients_share'])) {
-				if ($data['clients_share'][0] != '') {
-					foreach ($data['clients_share'] as $key => $value) {
-						$this->db->where('id', $data['id']);
-						$share = $this->db->get(db_prefix() . 'document_online_my_folder')->row();
-
-						$this->db->where('id', $value);
-						$contact = $this->db->get(db_prefix() . 'contacts')->row();
-
-
-						// if($contact){
-						// 	$contact_email = $contact->email;
-						// }
-						if ($contact != null && isset($contact->email) && $contact->email != '') {
-							$share->receiver = $contact->email;
-							$share->client_share_id = $value;
-							$share->type_template = "client_template";
-							if ($client_sent_email == 1) {
-								$template = mail_template('document_share_client', 'document', array_to_object($share));
+							if ($staff_sent_email == 1) {
+								$template = mail_template('document_share', 'document', array_to_object($share));
 								$template->send();
 							}
 
-							if ($client_notification == 1) {
-								$link_client = '';
-								$link_client = 'document/new_file_view/' . $data['parent_id'] . '/' . $data['id'];
+							if ($staff_notification == 1) {
+								$link = '';
+								$link = 'document_online/new_file_view/' . $data['parent_id'] . '/' . $data['id'];
 								$string_sub = get_staff_full_name($value) . ' ' . _l('share') . ' ' . $share->type . ' ' . $share->name . ' ' . _l('for_you');
-								$this->document_model->notifications($value, $link_client, strtolower($string_sub));
+								$this->document_model->notifications($value, $link, strtolower($string_sub));
 							}
 						}
 					}
 				}
+
+				if (count((array)$data['clients_share'])) {
+					if ($data['clients_share'][0] != '') {
+						foreach ($data['clients_share'] as $key => $value) {
+							$this->db->where('id', $data['id']);
+							$share = $this->db->get(db_prefix() . 'document_online_my_folder')->row();
+
+							$this->db->where('id', $value);
+							$contact = $this->db->get(db_prefix() . 'contacts')->row();
+
+
+							// if($contact){
+							// 	$contact_email = $contact->email;
+							// }
+							if ($contact != null && isset($contact->email) && $contact->email != '') {
+								$share->receiver = $contact->email;
+								$share->client_share_id = $value;
+								$share->type_template = "client_template";
+								if ($client_sent_email == 1) {
+									$template = mail_template('document_share_client', 'document', array_to_object($share));
+									$template->send();
+								}
+
+								if ($client_notification == 1) {
+									$link_client = '';
+									$link_client = 'document/new_file_view/' . $data['parent_id'] . '/' . $data['id'];
+									$string_sub = get_staff_full_name($value) . ' ' . _l('share') . ' ' . $share->type . ' ' . $share->name . ' ' . _l('for_you');
+									$this->document_model->notifications($value, $link_client, strtolower($string_sub));
+								}
+							}
+						}
+					}
+				}
+				$response['status'] = 1;
+				$response['message'] = _l('document_share_updated_successfully');
+			} else {
+				$response['error'] = _l('add_share_data');
+				// $message = _l('updated_fail');
+				// set_alert('warning', $message);
 			}
-		} else {
-			$message = _l('updated_fail');
-			set_alert('warning', $message);
 		}
-		redirect(admin_url('document/manage?tab=my_folder'));
+		echo json_encode($response);exit;
+		// redirect(admin_url('document/manage?tab=my_folder'));
 	}
 
 
@@ -421,7 +482,7 @@ class Document extends AdminController
 		} else {
 			if ($id != '') {
 				$success = $this->document_model->delete_folder_file($id);
-				$message = _l('deleted');
+				$message = _l('file_folder_deleted');
 			}
 			echo json_encode(['success' => $success, 'message' => $message]);
 		}

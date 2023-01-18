@@ -81,5 +81,34 @@
 <?php init_tail(); ?>
 <?php require 'modules/document/assets/js/manage_js.php'; ?>
 
+<script type="text/javascript">
+
+		function get_my_folder_list()
+		{
+			$.ajax({
+				type: 'POST',
+				url: admin_url+'document/get_my_folder_list',
+				data: {},
+				success: function(result){
+					var data = JSON.parse(result);
+					if(data.status == 1){
+						$('#document-advanced').treetable('destroy');
+						// $("#my_folder_tbody").html('');
+						$("#my_folder_tbody").html(data.content);
+						callDocumentListJs();
+					}
+				}
+			});
+		}
+
+		function callDocumentListJs(){
+			refreshDocumentListJS();
+		}
+
+		$(document).ready(function(){
+			get_my_folder_list();
+			// refreshDocumentListJS();
+		});
+</script>
 </body>
 </html>

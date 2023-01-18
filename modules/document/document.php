@@ -102,7 +102,7 @@ function document_head_component()
 
 
 
-    echo '<script src="' . module_dir_url(DOCUMENT_MODULE_NAME, 'assets/js/firepad-userlist.js') . '"></script>';
+    // echo '<script src="' . module_dir_url(DOCUMENT_MODULE_NAME, 'assets/js/firepad-userlist.js') . '"></script>';
     if (!(strpos($viewuri, 'admin/document/manage') === false) || !(strpos($viewuri, 'admin/projects/view') === false)) {
         echo '<link href="' . module_dir_url(DOCUMENT_MODULE_NAME, 'assets/plugins/ludo-jquery-treetable/css/jquery.treetable.css') . '?v=' . VERSION_DOCUMENT . '"  rel="stylesheet" type="text/css" />';
         echo '<link href="' . module_dir_url(DOCUMENT_MODULE_NAME, 'assets/plugins/ludo-jquery-treetable/css/jquery.treetable.theme.default.css') . '?v=' . VERSION_DOCUMENT . '"  rel="stylesheet" type="text/css" />';
@@ -170,6 +170,8 @@ function document_module_init_client_menu_items() {
 
 	$viewuri = $_SERVER['REQUEST_URI'];
     echo '<script src="' . module_dir_url(DOCUMENT_MODULE_NAME, 'assets/js/firepad-userlist.js') . '"></script>';
+    echo '<script src="' . base_url('assets/plugins/tinymce/tinymce.min.js') . '"></script>';
+    // echo $CI->app_scripts->add('tinymce-js', 'assets/plugins/tinymce/tinymce.min.js');
 	if (!(strpos($viewuri, 'document/document_client/file_view_share_related') === false)) {
 		echo '<link href="' . module_dir_url(DOCUMENT_MODULE_NAME, 'assets/css/custom.css') . '?v=' . VERSION_DOCUMENT . '"  rel="stylesheet" type="text/css" />';
 		echo '<link href="' . module_dir_url(DOCUMENT_MODULE_NAME, 'assets/plugins/ludo-jquery-treetable/css/jquery.treetable.css') . '?v=' . VERSION_DOCUMENT . '"  rel="stylesheet" type="text/css" />';

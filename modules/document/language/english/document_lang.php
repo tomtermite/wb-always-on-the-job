@@ -55,3 +55,14 @@ $lang['add_chapter'] = 'Add Chapter';
 $lang['close'] = 'close';
 $lang['document_name'] = 'Document Name';
 $lang['action'] = 'Action';
+$lang['document_updated_successfully'] = 'Document Updated Successfully.';
+$lang['document_folder_added_successfully'] = 'Folder Added Successfully.';
+$lang['document_folder_updated_successfully'] = 'Folder Updated Successfully.';
+$lang['document_file_added_successfully'] = 'File Added Successfully.';
+$lang['document_file_updated_successfully'] = 'File Updated Successfully.';
+$lang['file_folder_deleted'] = 'Deleted Successfully.';
+$lang['document_share_updated_successfully'] = 'Share Updated Successfully.';
+$lang['add_share_data'] = 'Please select inputs.';
+
+
+

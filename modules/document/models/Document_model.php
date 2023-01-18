@@ -14,14 +14,15 @@ class Document_model extends App_Model
 		$data = $this->get_my_folder_by_staff_my_folder();
 
 
-		$tree = "<tbody>";
+		// $tree = "<tbody>";
+		$tree = "";
 		foreach ($data as $data_key => $data_val) {
 			if ($data_val['parent_id'] == 0) {
 
 				$tree .= $this->dq_tree_my_folder($data_val);
 			}
 		}
-		$tree .= "<tbody>";
+		// $tree .= "<tbody>";
 		return $tree;
 	}
 	/**
@@ -222,14 +223,11 @@ class Document_model extends App_Model
 			if ($data['parent_id'] == '') {
 				$data['parent_id'] = '';
 			}
+			unset($data['parent_id']);
 		}
-		unset($data['parent_id']);
+		
 		$this->db->where('id', $data['id']);
-		$this->db->update(db_prefix() . 'document_online_my_folder', $data);
-		if ($this->db->affected_rows() > 0) {
-			return true;
-		}
-		return false;
+		return $this->db->update(db_prefix() . 'document_online_my_folder', $data);
 	}
 
 
@@ -430,7 +428,7 @@ class Document_model extends App_Model
 					array_push($clients_share, implode(',', $data['clients_share']));
 				}
 			}
-
+			
 			if ($share->client_groups_share != '') {
 				$data_client_groups = explode(',', $share->client_groups_share);
 				if (count($data_client_groups) > 0) {
@@ -559,6 +557,9 @@ class Document_model extends App_Model
 	 */
 	public function add_hash($data)
 	{
+		echo '<pre>';
+		print_r($data);
+		die;
 		$this->db->insert(db_prefix() . 'document_online_hash_share', $data);
 		$insert_id = $this->db->insert_id();
 		return $insert_id;
@@ -1271,7 +1272,7 @@ class Document_model extends App_Model
 	}
 
 	/**
-	 * edit folder 
+	 * add_ordered
 	 * @param  $data 
 	 * @return boolean
 	 */
@@ -1284,5 +1285,17 @@ class Document_model extends App_Model
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * add_chapter_version()
+	 * @param  $data 
+	 * @return boolean
+	 */
+	public function add_chapter_version($data)
+	{
+		$this->db->insert(db_prefix() . 'document_chapter_version', $data);
+		$insert_id = $this->db->insert_id();
+		return $insert_id;
 	}
 }
