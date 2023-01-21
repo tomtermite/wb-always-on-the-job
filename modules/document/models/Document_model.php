@@ -44,7 +44,8 @@ class Document_model extends App_Model
 			$this->db->update(db_prefix() . 'document_online_my_folder', ['parent_id' => ""]);
 			$parent_id = '';
 		}
-		$status_share = $root['staffs_share'] != '' || $root['departments_share'] != '' || $root['clients_share'] != '' || $root['client_groups_share'] != '' ? $html_change : '';
+		$status_share =  $root['flag_share'] == 1  ? $html_change : '';
+
 		if ($parent_id == '') {
 			$tree_tr .= '<tr class="right-menu-position file_td" data-tt-id="' . $root['id'] . '" data-tt-name="' . $root['name'] . '" data-tt-type="' . $type . '">';
 			if ($root['type'] == 'file') {
@@ -215,7 +216,9 @@ class Document_model extends App_Model
 			$share = $this->get_my_folder($data['parent_id']);
 			$share_data = $this->get_share_form_parent($data['parent_id']);
 			$staffs_share = [];
+			$departments_share = [];
 			$clients_share = [];
+			$client_groups_share = [];
 			if ($share->staffs_share != '') {
 				$data_staffs = explode(',', $share->staffs_share);
 				if (count($data_staffs) > 0) {
@@ -232,6 +235,51 @@ class Document_model extends App_Model
 					}
 				}	
 			}			
+			if ($share->client_groups_share != '') {
+				$data_client_groups = explode(',', $share->client_groups_share);
+				if (count($data_client_groups) > 0) {
+					foreach ($data_client_groups as $key => $value) {
+						array_push($client_groups_share, $value);
+					}
+				}
+				$client_groups = $client_groups_share;
+				
+
+				if (count($client_groups) != count($client_groups_share)) {
+					foreach ($client_groups_share as $key => $value) {
+						$clientids = get_all_client_by_group($value);
+						if (count($clientids) > 0) {
+							foreach ($clientids as $clientid) {
+								if (!in_array($clientid['customer_id'], $clients_share)) {
+									array_push($clients_share, $clientid['customer_id']);
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if ($share->departments_share != '') {
+				$data_departments = explode(',', $share->departments_share);
+				if (count($data_departments) > 0) {
+					foreach ($data_departments as $key => $value) {
+						array_push($departments_share, $value);
+					}
+				}
+				$departments = $departments_share;
+				if (count($departments) != count($departments_share)) {
+					foreach ($departments_share as $key => $value) {
+						$staffids = get_all_staff_by_department_document($value);
+						if (count($staffids) > 0) {
+							foreach ($staffids as $staffid) {
+								if (!in_array($staffid['staffid'], $staffs_share)) {
+									array_push($staffs_share, $staffid['staffid']);
+								}
+							}
+						}
+					}
+				}
+			}
 			if($share->group_share_staff == 1 && $share->group_share_staff != '') {
 				$data_hash['rel_type'] = 'staff';
 				$data_hash['id_share'] = $insert_id;
@@ -252,7 +300,16 @@ class Document_model extends App_Model
 					$this->tree_my_folder_hash($data_hash);
 				}
 			}
+
 		
+			$data['staffs_share'] = $this->array_to_string_unique(explode(',', implode(',', array_unique($staffs_share))));
+			$data['departments_share'] = $this->array_to_string_unique(explode(',', implode(',', array_unique($departments_share))));
+			$data['clients_share'] = $this->array_to_string_unique(explode(',', implode(',', array_unique($clients_share))));
+			$data['client_groups_share'] = $this->array_to_string_unique(explode(',', implode(',', array_unique($client_groups_share))));
+			$data['group_share_staff'] = $share->group_share_staff;
+			$data['group_share_client'] = $share->group_share_client;
+			$this->db->where('id', $insert_id);
+			$this->db->update(db_prefix() . 'document_online_my_folder', $data);
 		}
 		return $insert_id;
 	}
@@ -557,6 +614,7 @@ class Document_model extends App_Model
 			$data['departments_share'] = $this->array_to_string_unique(explode(',', implode(',', array_unique($departments_share))));
 			$data['clients_share'] = $this->array_to_string_unique(explode(',', implode(',', array_unique($clients_share))));
 			$data['client_groups_share'] = $this->array_to_string_unique(explode(',', implode(',', array_unique($client_groups_share))));
+			$data['flag_share'] = 1;
 			$this->db->where('id', $data['id']);
 			$this->db->update(db_prefix() . 'document_online_my_folder', $data);
 

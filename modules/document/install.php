@@ -21,6 +21,7 @@ if (!$CI->db->table_exists(db_prefix() . 'document_online_my_folder')) {
       `rel_id` varchar(11) NULL,
       `group_share_staff` varchar(1) NULL,
       `group_share_client` varchar(1) NULL,
+      `flag_share` TINYINT NOT NULL DEFAULT '0',
       `inserted_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
       `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (`id`)

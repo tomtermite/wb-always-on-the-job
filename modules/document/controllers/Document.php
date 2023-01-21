@@ -335,7 +335,7 @@ class Document extends AdminController
 			$this->db->select('*');
 			$this->db->where('id', $data['parent_id']);
 			$speadsheets = $this->db->get(db_prefix() . 'document_online_my_folder')->row();
-			if($speadsheets->group_share_staff != null && $speadsheets->group_share_client != null){
+			if($speadsheets->flag_share == 1){
 				$response['error'] = _l('error_parent_folder');
 				echo json_encode($response);exit;
 			}
