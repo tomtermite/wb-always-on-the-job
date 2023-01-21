@@ -326,12 +326,14 @@ class Document_client extends ClientsController
         $totalRecordwithFilter = $records;
 
         ## Fetch records
-        $this->db->select(db_prefix() . 'document_chapter.*');
+        $this->db->select(db_prefix() . 'document_chapter.*,'.db_prefix() .'document_online_hash_share.role');
         if ($searchQuery != '') {
             $this->db->where($searchQuery);
         }
 
         $this->db->where(db_prefix() . 'document_chapter.document_folder_id', $parent_id);
+        $this->db->where(db_prefix() . 'document_online_hash_share.rel_id',get_client_user_id());
+        $this->db->join(db_prefix() . 'document_online_hash_share', db_prefix() . 'document_online_hash_share.id_share = ' . db_prefix() . 'document_chapter.document_folder_id', 'left');
         $this->db->order_by($columnName, $columnSortOrder);
         $this->db->limit($rowperpage, $start);
         $this->db->group_by(db_prefix() . 'document_chapter.id');

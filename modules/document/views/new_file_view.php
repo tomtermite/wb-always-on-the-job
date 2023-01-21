@@ -11,9 +11,11 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 				<div class="_filters _hidden_inputs">
 					<?php echo form_hidden('parent_id', $parent_id); ?>
 				</div>
+				<?php if($role == get_staff_user_id()){?>
 				<a href="<?php echo admin_url('document/new_chapter/' . $parent_id); ?>" class="btn add_chapter btn-info">
 					<i class="fa fa-plus"></i> <?php echo _l('add_chapter'); ?>
 				</a>
+				<?php }?>
 				<a href="<?php echo admin_url('document/manage'); ?>" class="btn  btn-danger">
 					<i class="fa fa-times"></i> <?php echo _l('close'); ?>
 				</a>

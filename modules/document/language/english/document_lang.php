@@ -63,6 +63,7 @@ $lang['document_file_updated_successfully'] = 'File Updated Successfully.';
 $lang['file_folder_deleted'] = 'Deleted Successfully.';
 $lang['document_share_updated_successfully'] = 'Share Updated Successfully.';
 $lang['add_share_data'] = 'Please select inputs.';
+$lang['error_parent_folder'] = 'Parent folder already shered';
 
 
 

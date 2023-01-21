@@ -180,10 +180,10 @@ class Document extends AdminController
 	 */
 	public function new_file_view($parent_id, $id = "")
 	{
-		$data_form = $this->input->post();
 		$data['title'] = _l('new_file');
 		$data['parent_id'] = $parent_id;
-		$data['role'] = "";
+		$share = $this->document_model->get_my_folder($parent_id);
+		$data['role'] = $share->staffid;
 		// $data['departments'] = $this->departments_model->get();
 		// $data['staffs'] = $this->staff_model->get();
 		// $data['clients'] = $this->clients_model->get();
@@ -330,15 +330,24 @@ class Document extends AdminController
 		$response = [];
 		$response['status'] = 0;
 		$data = $this->input->post();
+		if($data['parent_id'] > 0){
+
+			$this->db->select('*');
+			$this->db->where('id', $data['parent_id']);
+			$speadsheets = $this->db->get(db_prefix() . 'document_online_my_folder')->row();
+			if($speadsheets->group_share_staff != null && $speadsheets->group_share_client != null){
+				$response['error'] = _l('error_parent_folder');
+				echo json_encode($response);exit;
+			}
+		}
 		if(!empty($data))
 		{
-			$success = $this->document_model->update_share($data);
 
+			$success = $this->document_model->update_share($data);
 			$staff_notification = get_option('document_staff_notification');
 			$staff_sent_email = get_option('document_email_templates_staff');
 			$client_notification = get_option('document_client_notification');
 			$client_sent_email = get_option('document_email_templates_client');
-
 			if ($success == true) {
 				// $message = _l('updated_successfully');
 				// set_alert('success', $message);

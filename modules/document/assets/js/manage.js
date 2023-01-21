@@ -3,7 +3,6 @@
   $(document).ready(function () {
     $.Shortcuts.stop();
   });
-  
   appValidateForm($("#add-edit-file-form"), {
     name: "required",
   }, save_files, {name : "File name is required."});
@@ -12,7 +11,10 @@
     name: "required",
   }, save_folder, {name : "Folder name is required."});
 
-  appValidateForm($("#share-form"), {}, save_share);
+  appValidateForm($("#share-form"), {
+    'staffs_share[0]':"required",
+    'clients_share[0]':"required",
+  }, save_share,{'staffs_share[0]' : "Please select staff.",'clients_share[0]' : "Please select client."});
 
   appValidateForm($("#related-form"), {
     id: "required",
@@ -197,17 +199,17 @@
     }
   });
 
-  $('#RelatedModal [type="submit"]').click(function () {
-    var id = $('#RelatedModal [name="id"]').val();
-    if (id == "") {
-      alert_float("warning", "Please select a file or folder!");
-    }
-  });
-
-  $("#document-advanced .file_td").on("click", function () {
-    var id = $(this).data("tt-id");
-    var type =$(this).data("tt-type");
-    var parent_id =$(this).data("tt-parent-id");
+  // $('#RelatedModal [type="submit"]').click(function () {
+  //   var id = $('#RelatedModal [name="id"]').val();
+  //   if (id == "") {
+  //     alert_float("warning", "Please select a file or folder!");
+  //   }
+  // });
+  // $(document).on("dblclick","#document-advanced .tr-pointer",function() {
+  $(document).on("click","#document-advanced #my_folder_tbody tr", function () {
+    var id = $(this).attr("data-tt-id");
+    var type =$(this).attr("data-tt-type");
+    var parent_id =$(this).attr("data-tt-parent-id");
     parent_id = typeof parent_id == "undefined" ? 0 : parent_id;
     $('#share-form input[name="id"]').val(id);
     $('#ShareModal input[name="parent_id"]').val(parent_id);
@@ -736,11 +738,11 @@ function save_share(form) {
       response = JSON.parse(response);
       if (response.status == 1) {
           alert_float('success', response.message);
+          $('#ShareModal').modal('hide');
       } else {
-        alert_float('error', response.error);
+        alert_float("warning", response.error);
       }
-      $('#sharedetailModal').modal('hide');
-      $("#add-edit-folder-form")[0].reset();
+      $("#share-form")[0].reset();
       get_my_folder_list();
   });
   return false;
