@@ -184,11 +184,7 @@ class Document extends AdminController
 		$data['parent_id'] = $parent_id;
 		$share = $this->document_model->get_my_folder($parent_id);
 		$data['role'] = $share->staffid;
-		// $data['departments'] = $this->departments_model->get();
-		// $data['staffs'] = $this->staff_model->get();
-		// $data['clients'] = $this->clients_model->get();
-		// $data['client_groups'] = $this->clients_model->get_groups();
-
+		
 		if (!isset($success)) {
 			$this->load->view('new_file_view', $data);
 		}
@@ -588,5 +584,50 @@ class Document extends AdminController
 		
 		echo json_encode($result);
 		die;
+	}
+
+	/*
+	* chapter_versions()
+	* param $chapter_id
+	* param $parent_id
+	*/
+	public function chapter_versions($chapter_id, $parent_id){
+		
+		$chapter_details = $this->document_model->get_my_chapter_by_chapter_id($chapter_id);
+
+		$data['parent_id'] = $parent_id;
+		$data['chapter_id'] = $chapter_id;
+		$data['title'] = _l('document_chapter_versions').' - '.(isset($chapter_details->name)?$chapter_details->name:'');
+		$data['role'] = $share->staffid;
+		
+		if (!isset($success)) {
+			$this->load->view('chapter_versions', $data);
+		}
+	}
+
+	/*
+	* chapter_versions_table()
+	* param $chapter_id
+	*/
+	public function chapter_versions_table(){
+		
+		$this->app->get_table_data(module_views_path('document', 'table_chapter_versions'));
+	}
+
+	/*
+	* get_chapter_version()
+	* param $chapter_id
+	*/
+	public function get_chapter_version($id){
+		$response = [];
+		$response['status'] =  0;
+		if(isset($id)){
+			$chapter_version_details = $this->document_model->get_chapter_version($id);
+			$response['status'] = 1;
+			$response['chapter_version_details'] =  $chapter_version_details;
+		}
+
+		echo json_encode($response);
+		exit;
 	}
 }

@@ -60,6 +60,7 @@ foreach ($rResult as $aRow) {
                     $name .= '<span class="text-dark"> | </span><a href="javascript:void(0);" class="delete_chapter" id="delete_chapter" onclick="delete_chapter('.$aRow['chapter_id'].')">Delete</a>';
                 }
             }
+            $name .= '<span class="text-dark"> | </span><a href="'.site_url('document/chapter_versions/'.$aRow['chapter_id'].'/'.$this->ci->input->post('parent_id')).'" class="versions_list" id="versions_list">'._l('document_chapter_versions').'</a>';
         
         
             $name .= '</div>';

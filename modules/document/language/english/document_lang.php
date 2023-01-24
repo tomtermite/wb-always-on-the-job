@@ -1,7 +1,7 @@
 <?php
 
 $lang['DOCUMENT_ONLINE']                                                         = 'Document online';
-$lang['document']                                                         = 'Document';
+$lang['document']                                                         = 'Documents';
 $lang['my_folder']                                                         			= 'My Folder';
 $lang['my_share_folder']                                                         	= 'My Shared Folder';
 $lang['add_file']                                                         			= 'New File';
@@ -64,6 +64,14 @@ $lang['file_folder_deleted'] = 'Deleted Successfully.';
 $lang['document_share_updated_successfully'] = 'Share Updated Successfully.';
 $lang['add_share_data'] = 'Please select inputs.';
 $lang['error_parent_folder'] = 'Parent folder already shered';
+$lang['document_chapter_versions'] = 'Versions';
+
+$lang['chapter_version_number'] = 'Version Number';
+$lang['chapter_version_change_role'] = 'Change Role';
+$lang['chapter_version_change_by'] = 'Change By';
+$lang['chapter_version_description'] = 'View Description';
+$lang['chapter_version_last_modify'] = 'Date Last Edited';
+
 
 
 

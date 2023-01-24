@@ -1408,4 +1408,18 @@ class Document_model extends App_Model
 		$insert_id = $this->db->insert_id();
 		return $insert_id;
 	}
+
+	/**
+	 * get_chapter_version()
+	 * @param  $id
+	 * @return array
+	 */
+	public function get_chapter_version($id)
+	{
+		$this->db->select("*");
+		$this->db->from(db_prefix() . 'document_chapter_version');
+		$this->db->where("id", $id);
+		$query = $this->db->get();
+		return $query->row();
+	}
 }

@@ -61,7 +61,7 @@ defined('BASEPATH') or exit('No direct script access allowed'); ?>
 
 		// $('.table-document').column(5).visible(false, false).columns.adjust();
 		// _table_api.column(5).visible(false, false).columns.adjust();
-		_table_api.buttons( 0, null ).remove();
+		// _table_api.buttons( 0, null ).remove();
 	});
 
 	function delete_chapter(id) {
