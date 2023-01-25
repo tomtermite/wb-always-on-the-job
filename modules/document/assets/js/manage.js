@@ -71,7 +71,8 @@
   var staff_share_value = "";
   var client_share_value = "";
 
-  $(".add_share_button").on("click", function () {
+  $(document).on("click",".add_share_button", function () {
+
     $('input[name="value-hidden"]').val("");
     var id = $('#ShareModal [name="id"]').val();
     $(".remove_box_information_review").click();
@@ -125,7 +126,7 @@
             });
           }
         } else {
-          $('input[name="group_share_client').removeAttr("checked");
+          $('input[name="group_share_client').attr("checked");
         }
 
         if (response.group_share_staff == 1) {
@@ -171,7 +172,7 @@
             });
           }
         } else {
-          $('input[name="group_share_staff').removeAttr("checked");
+          $('input[name="group_share_staff').attr("checked");
         }
         $(".test_class").click(function () {
           $(".remove_box_information_review").click();
@@ -182,8 +183,8 @@
           $('select[name="staffs_share[0]"]').val("");
           $('select[name="client_groups_share[0]"]').selectpicker("refresh");
           $('select[name="departments_share[0]"]').selectpicker("refresh");
-          $('input[name="group_share_staff"]').prop("checked", false);
-          $('input[name="client_groups_share"]').prop("checked", false);
+          $('input[name="group_share_staff"]').prop("checked", true);
+          $('input[name="client_groups_share"]').prop("checked", true);
         });
       });
     } else {

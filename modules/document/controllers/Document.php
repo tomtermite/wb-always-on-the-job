@@ -327,18 +327,26 @@ class Document extends AdminController
 		$response['status'] = 0;
 		$data = $this->input->post();
 		if($data['parent_id'] > 0){
-
-			$this->db->select('*');
-			$this->db->where('id', $data['parent_id']);
-			$speadsheets = $this->db->get(db_prefix() . 'document_online_my_folder')->row();
-			if($speadsheets->flag_share == 1){
-				$response['error'] = _l('error_parent_folder');
-				echo json_encode($response);exit;
-			}
+            $id = array();
+			$parent_ids = $this->document_model->get_my_folder_by_parent_id($data['parent_id']);
+			 if (!empty($parent_ids)) {
+				 foreach ($parent_ids as $id_root) {
+                  array_push($id,$id_root['id']);	 
+				 }
+				    $this->db->where_in('id', $id);
+					$speadsheets = $this->db->get(db_prefix() . 'document_online_my_folder')->row();
+					if($speadsheets->flag_share == 1){
+						$response['error'] = _l('error_parent_folder');
+						echo json_encode($response);exit;
+					}
+			 }
+			
 		}
+
+		
 		if(!empty($data))
 		{
-
+	
 			$success = $this->document_model->update_share($data);
 			$staff_notification = get_option('document_staff_notification');
 			$staff_sent_email = get_option('document_email_templates_staff');
@@ -598,7 +606,6 @@ class Document extends AdminController
 		$data['parent_id'] = $parent_id;
 		$data['chapter_id'] = $chapter_id;
 		$data['title'] = _l('document_chapter_versions').' - '.(isset($chapter_details->name)?$chapter_details->name:'');
-		$data['role'] = $share->staffid;
 		
 		if (!isset($success)) {
 			$this->load->view('chapter_versions', $data);

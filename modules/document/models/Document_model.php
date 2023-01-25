@@ -9,6 +9,7 @@ class Document_model extends App_Model
 	 * tree my folder 
 	 * @return html
 	 */
+	protected $ids = [];
 	public function tree_my_folder()
 	{
 		$data = $this->get_my_folder_by_staff_my_folder();
@@ -66,7 +67,7 @@ class Document_model extends App_Model
 			<td>
 			<span>' . get_staff_full_name($root['staffid']) . '</span>
 			</td>';
-			if (!empty($share_detail['staffs_share'])) {
+			if ($share_detail['staffs_flag']  == 1) {
 				$tree_tr .= '<td>';
 				foreach ($share_detail['staffs_share'] as $key => $value) {
 					if ($share_detail['staffs_role'][$key] == 1) {
@@ -78,7 +79,7 @@ class Document_model extends App_Model
 				}
 				$tree_tr .= '</td>';
 			}
-			if (!empty($share_detail['clients_share'])) {
+			if ($share_detail['clients_flag'] == 1) {
 				$tree_tr .= '<td>';
 
 				foreach ($share_detail['clients_share'] as $key => $value) {
@@ -110,7 +111,7 @@ class Document_model extends App_Model
 			<td>
 			<span>' . get_staff_full_name($root['staffid']) . '</span>
 			</td>';
-			if (!empty($share_detail['staffs_share'])) {
+			if ($share_detail['staffs_flag'] == 1) {
 				$tree_tr .= '
 				<td>';
 				foreach ($share_detail['staffs_share'] as $key => $value) {
@@ -124,7 +125,7 @@ class Document_model extends App_Model
 				$tree_tr .= '
 			</td>';
 			}
-			if (!empty($share_detail['clients_share'])) {
+			if ($share_detail['clients_flag'] == 1) {
 				$tree_tr .= '<td>';
 				foreach ($share_detail['clients_share'] as $key => $value) {
 					if ($share_detail['clients_role'][$key] == 1) {
@@ -209,10 +210,10 @@ class Document_model extends App_Model
 		$data['staffid'] = get_staff_user_id();
 		$data['size'] = "--";
 		$data['category'] = "my_folder";
-	
+
 		$this->db->insert(db_prefix() . 'document_online_my_folder', $data);
 		$insert_id = $this->db->insert_id();
-		if($data['parent_id'] > 0){
+		if ($data['parent_id'] > 0) {
 			$share = $this->get_my_folder($data['parent_id']);
 			$share_data = $this->get_share_form_parent($data['parent_id']);
 			$staffs_share = [];
@@ -225,7 +226,7 @@ class Document_model extends App_Model
 					foreach ($data_staffs as $key => $value) {
 						array_push($staffs_share, $value);
 					}
-				}	
+				}
 			}
 			if ($share->clients_share != '') {
 				$data_clients = explode(',', $share->clients_share);
@@ -233,8 +234,8 @@ class Document_model extends App_Model
 					foreach ($data_clients as $key => $value) {
 						array_push($clients_share, $value);
 					}
-				}	
-			}			
+				}
+			}
 			if ($share->client_groups_share != '') {
 				$data_client_groups = explode(',', $share->client_groups_share);
 				if (count($data_client_groups) > 0) {
@@ -243,7 +244,7 @@ class Document_model extends App_Model
 					}
 				}
 				$client_groups = $client_groups_share;
-				
+
 
 				if (count($client_groups) != count($client_groups_share)) {
 					foreach ($client_groups_share as $key => $value) {
@@ -280,16 +281,16 @@ class Document_model extends App_Model
 					}
 				}
 			}
-			if($share->group_share_staff == 1 && $share->group_share_staff != '') {
+			if ($share->group_share_staff == 1 && $share->group_share_staff != '') {
 				$data_hash['rel_type'] = 'staff';
 				$data_hash['id_share'] = $insert_id;
-					foreach ($staffs_share as $key => $value) {
-						if (strlen($value) == 1) {
-							$data_hash['rel_id'] = $value;
-							$data_hash['role'] = $share_data[0]['role'];
-							$this->tree_my_folder_hash($data_hash);
-						}
+				foreach ($staffs_share as $key => $value) {
+					if (strlen($value) == 1) {
+						$data_hash['rel_id'] = $value;
+						$data_hash['role'] = $share_data[0]['role'];
+						$this->tree_my_folder_hash($data_hash);
 					}
+				}
 			}
 			if ($share->group_share_client == 2 || $share->group_share_client != '') {
 				$data_hash['rel_type'] = 'client';
@@ -301,7 +302,7 @@ class Document_model extends App_Model
 				}
 			}
 
-		
+
 			$data['staffs_share'] = $this->array_to_string_unique(explode(',', implode(',', array_unique($staffs_share))));
 			$data['departments_share'] = $this->array_to_string_unique(explode(',', implode(',', array_unique($departments_share))));
 			$data['clients_share'] = $this->array_to_string_unique(explode(',', implode(',', array_unique($clients_share))));
@@ -326,7 +327,7 @@ class Document_model extends App_Model
 			}
 			unset($data['parent_id']);
 		}
-		
+
 		$this->db->where('id', $data['id']);
 		return $this->db->update(db_prefix() . 'document_online_my_folder', $data);
 	}
@@ -529,7 +530,7 @@ class Document_model extends App_Model
 					array_push($clients_share, implode(',', $data['clients_share']));
 				}
 			}
-			
+
 			if ($share->client_groups_share != '') {
 				$data_client_groups = explode(',', $share->client_groups_share);
 				if (count($data_client_groups) > 0) {
@@ -610,15 +611,31 @@ class Document_model extends App_Model
 					$this->tree_my_folder_hash($data_hash);
 				}
 			}
+
 			$data['staffs_share'] = $this->array_to_string_unique(explode(',', implode(',', array_unique($staffs_share))));
 			$data['departments_share'] = $this->array_to_string_unique(explode(',', implode(',', array_unique($departments_share))));
 			$data['clients_share'] = $this->array_to_string_unique(explode(',', implode(',', array_unique($clients_share))));
 			$data['client_groups_share'] = $this->array_to_string_unique(explode(',', implode(',', array_unique($client_groups_share))));
+
+			array_push($this->ids, $data['id']);
+			$this->get_root_ids($data['id']);
+			if (!empty($this->ids)) {
+				$shere_data = [];
+				$shere_data['staffs_share'] = $data['staffs_share'];
+				$shere_data['group_share_staff'] = 1;
+				$shere_data['group_share_client'] = 2;
+				$shere_data['departments_share'] = $data['departments_share'];
+				$shere_data['client_groups_share'] = $data['client_groups_share'];
+				$shere_data['clients_share'] = $data['clients_share'];
+				$this->db->where_in('id', $this->ids);
+				$this->db->update(db_prefix() . 'document_online_my_folder', $shere_data);
+			}
+
 			$data['flag_share'] = 1;
 			$this->db->where('id', $data['id']);
-			$this->db->update(db_prefix() . 'document_online_my_folder', $data);
+			$data = $this->db->update(db_prefix() . 'document_online_my_folder', $data);
 
-			if ($this->db->affected_rows() > 0) {
+			if ($data > 0) {
 				return true;
 			}
 			return false;
@@ -633,6 +650,17 @@ class Document_model extends App_Model
 	 * @param  $data 
 	 * @return  boolean      
 	 */
+	function get_root_ids($id)
+	{
+
+		$parent_ids = $this->get_my_folder_by_parent_id($id);
+		if (!empty($parent_ids)) {
+			foreach ($parent_ids as $id_root) {
+				array_push($this->ids, $id_root['id']);
+				$this->get_root_ids($id_root['id']);
+			}
+		}
+	}
 	public function exit_object_share($data, $update)
 	{
 		if ($update == "true") {
@@ -742,6 +770,7 @@ class Document_model extends App_Model
 	public function get_my_folder_by_staff_share_folder($staffid)
 	{
 		$this->db->where('find_in_set(' . $staffid . ', staffs_share)');
+		$this->db->where('flag_share', 1);
 		return $this->db->get(db_prefix() . 'document_online_my_folder')->result_array();
 	}
 	/**
@@ -769,6 +798,7 @@ class Document_model extends App_Model
 	{
 
 		$get_hash = $this->get_hash('staff', get_staff_user_id(), $root['id']);
+
 		$tree_tr = '';
 		$type = $root['type'] == 'folder' ? "folder" : "file";
 		if ($root['id'] == $parent_id) {
@@ -834,7 +864,7 @@ class Document_model extends App_Model
 		return $this->db->get(db_prefix() . 'document_online_hash_share')->row();
 	}
 
-		/**
+	/**
 	 * get share form hash
 	 * @param  string $hash 
 	 * @return row       
@@ -853,6 +883,7 @@ class Document_model extends App_Model
 	{
 		if ($clientid != null || $clientid != '') {
 			$this->db->where('find_in_set(' . $clientid . ', clients_share)');
+			$this->db->where('flag_share', 1);
 			return $this->db->get(db_prefix() . 'document_online_my_folder')->result_array();
 		}
 		return [];
@@ -1006,6 +1037,8 @@ class Document_model extends App_Model
 		$rs['clients_share_id'] = [];
 		$rs['clients_role'] = [];
 		$rs['staffs_role'] = [];
+		$rs['staffs_flag'] = $data->flag_share;
+		$rs['clients_flag'] = $data->flag_share;
 
 		if (count($staffs_share) > 0) {
 			foreach ($staffs_share as $key => $value) {

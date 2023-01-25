@@ -427,7 +427,7 @@ function menuItemListener(link) {
                 });
               }
             } else {
-              $('input[name="group_share_client').removeAttr("checked");
+              $('input[name="group_share_client').attr("checked");
             }
 
             if (response.group_share_staff == 1) {
@@ -475,7 +475,7 @@ function menuItemListener(link) {
                 });
               }
             } else {
-              $('input[name="group_share_staff').removeAttr("checked");
+              $('input[name="group_share_staff').attr("checked");
             }
           }
         );
