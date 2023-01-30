@@ -216,6 +216,9 @@ class Document_model extends App_Model
 		if ($data['parent_id'] > 0) {
 			$share = $this->get_my_folder($data['parent_id']);
 			$share_data = $this->get_share_form_parent($data['parent_id']);
+			$update = "true";
+			$data_delete['id'] = $data['parent_id'];
+			if($this->exit_object_share_delete($data_delete, $update)){
 			$staffs_share = [];
 			$departments_share = [];
 			$clients_share = [];
@@ -281,20 +284,21 @@ class Document_model extends App_Model
 					}
 				}
 			}
+
 			if ($share->group_share_staff == 1 && $share->group_share_staff != '') {
 				$data_hash['rel_type'] = 'staff';
-				$data_hash['id_share'] = $insert_id;
+				$data_hash['id_share'] = $data_delete['id'];
 				foreach ($staffs_share as $key => $value) {
-					if (strlen($value) == 1) {
+					
 						$data_hash['rel_id'] = $value;
 						$data_hash['role'] = $share_data[0]['role'];
 						$this->tree_my_folder_hash($data_hash);
-					}
+					
 				}
 			}
 			if ($share->group_share_client == 2 || $share->group_share_client != '') {
 				$data_hash['rel_type'] = 'client';
-				$data_hash['id_share'] = $insert_id;
+				$data_hash['id_share'] = $data_delete['id'];
 				foreach ($clients_share as $key => $value) {
 					$data_hash['rel_id'] = $value;
 					$data_hash['role'] = $share_data[0]['role'];
@@ -311,6 +315,7 @@ class Document_model extends App_Model
 			$data['group_share_client'] = $share->group_share_client;
 			$this->db->where('id', $insert_id);
 			$this->db->update(db_prefix() . 'document_online_my_folder', $data);
+		}
 		}
 		return $insert_id;
 	}
@@ -444,6 +449,8 @@ class Document_model extends App_Model
 		$role_client = $data['role_client'];
 		unset($data['role_staff']);
 		unset($data['role_client']);
+		
+
 		if ($this->exit_object_share($data, $update)) {
 			$share = $this->get_my_folder($data['id']);
 
@@ -668,12 +675,24 @@ class Document_model extends App_Model
 			$this->db->update(db_prefix() . 'document_online_my_folder', ['staffs_share' => '', 'departments_share' => '', 'clients_share' => '', 'client_groups_share' => '', 'group_share_staff' => '', 'group_share_client' => '']);
 			$this->db->where('id_share', $data['id']);
 			$this->db->delete(db_prefix() . 'document_online_hash_share');
-			$list_child = $this->get_my_folder_by_parent_id($data['id']);
-			if (count($list_child) > 0) {
-				foreach ($list_child as $key => $value) {
-					$this->db->where('id_share', $value['id']);
+			$this->get_root_ids($data['id']);
+			if (!empty($this->ids)) {
+				$this->db->where_in('id_share', $this->ids);
 					$this->db->delete(db_prefix() . 'document_online_hash_share');
-				}
+			}
+		}
+
+		return true;
+	}
+	public function exit_object_share_delete($data, $update)
+	{
+		if ($update == "true") {
+			$this->db->where('id_share', $data['id']);
+			$this->db->delete(db_prefix() . 'document_online_hash_share');
+			$this->get_root_ids($data['id']);
+			if (!empty($this->ids)) {
+				$this->db->where_in('id_share', $this->ids);
+					$this->db->delete(db_prefix() . 'document_online_hash_share');
 			}
 		}
 

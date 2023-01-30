@@ -157,78 +157,78 @@ class Document_client extends ClientsController
       }    
     }
     
-    /**
-     * new file view 
-     * @param  int $parent_id 
-     * @param  int $id        
-     * @return  view or json            
-     */
-    public function file_view_share_related($hash = ""){
-      $data_form = $this->input->post();
-      $data['tree_save'] = json_encode($this->document_model->get_folder_tree());
+    // /**
+    //  * new file view 
+    //  * @param  int $parent_id 
+    //  * @param  int $id        
+    //  * @return  view or json            
+    //  */
+    // public function file_view_share_related($hash = ""){
+    //   $data_form = $this->input->post();
+    //   $data['tree_save'] = json_encode($this->document_model->get_folder_tree());
       
-      if($hash != ""){
-        $share_child = $this->document_model->get_share_form_hash_related($hash);
-        $id = $share_child->parent_id;
-        $file_excel = $this->document_model->get_file_sheet($id);
-        $data['parent_id'] = $file_excel->parent_id;
-        $data['role'] = $share_child->role;
-      }else{
-        $id = "";
-        $data['parent_id'] = "";
-        $data['role'] = 1;
-      }
+    //   if($hash != ""){
+    //     $share_child = $this->document_model->get_share_form_hash_related($hash);
+    //     $id = $share_child->parent_id;
+    //     $file_excel = $this->document_model->get_file_sheet($id);
+    //     $data['parent_id'] = $file_excel->parent_id;
+    //     $data['role'] = $share_child->role;
+    //   }else{
+    //     $id = "";
+    //     $data['parent_id'] = "";
+    //     $data['role'] = 1;
+    //   }
 
-      $data_form = $this->input->post();
-      $data['title'] = _l('new_file');
-      $data['folder'] = $this->document_model->get_my_folder_all();
-      if($data_form || isset($data_form['id'])){
-        if($data_form['id'] == ""){
-          $success = $this->document_model->add_file_sheet($data_form);
-          if(is_numeric($success)){
-            $message = _l('added_successfully');
-            $file_excel = $this->document_model->get_file_sheet($success);
-            echo json_encode(['success' => true, 'message' => $message, 'name_excel' => $file_excel->name ]);
-          }
-          else{
-            $message = _l('added_fail');
-            echo json_encode(['success' => false, 'message' => $message]);
-          }
-        }
-      }
-      if($id != "" || isset($data_form['id'])){
-        if(isset($data_form['id'])){
-          if($data_form['id'] != ""){
-            $data['id'] = $data_form['id'];
-          }
-        }else{  
-          $data['id'] = $id;
-          // process hanlde file                                 
-          $data_file = process_file($id);
-          if(isset($data_file['data_form'])){
-            $data['data_form'] = $data_file['data_form'];
-            $data['name'] = $data_file['name'];
-          }
-        }
+    //   $data_form = $this->input->post();
+    //   $data['title'] = _l('new_file');
+    //   $data['folder'] = $this->document_model->get_my_folder_all();
+    //   if($data_form || isset($data_form['id'])){
+    //     if($data_form['id'] == ""){
+    //       $success = $this->document_model->add_file_sheet($data_form);
+    //       if(is_numeric($success)){
+    //         $message = _l('added_successfully');
+    //         $file_excel = $this->document_model->get_file_sheet($success);
+    //         echo json_encode(['success' => true, 'message' => $message, 'name_excel' => $file_excel->name ]);
+    //       }
+    //       else{
+    //         $message = _l('added_fail');
+    //         echo json_encode(['success' => false, 'message' => $message]);
+    //       }
+    //     }
+    //   }
+    //   if($id != "" || isset($data_form['id'])){
+    //     if(isset($data_form['id'])){
+    //       if($data_form['id'] != ""){
+    //         $data['id'] = $data_form['id'];
+    //       }
+    //     }else{  
+    //       $data['id'] = $id;
+    //       // process hanlde file                                 
+    //       $data_file = process_file($id);
+    //       if(isset($data_file['data_form'])){
+    //         $data['data_form'] = $data_file['data_form'];
+    //         $data['name'] = $data_file['name'];
+    //       }
+    //     }
 
-        if($data_form && $data_form['id'] != ""){
-          $success = $this->document_model->edit_file_sheet($data_form);
-          if($success == true){
-            $message = _l('updated_successfully');
-            echo json_encode(['success' => $success, 'message' => $message]);
-          }
-          else{
-            $message = _l('updated_fail');
-            echo json_encode(['success' => $success, 'message' => $message]);
-          }
-        }
-      }
-      if(!isset($success)){
-        $this->data($data);
-        $this->view('share_file_view_client');
-        $this->layout();
-      }
-    }
+    //     if($data_form && $data_form['id'] != ""){
+    //       $success = $this->document_model->edit_file_sheet($data_form);
+    //       if($success == true){
+    //         $message = _l('updated_successfully');
+    //         echo json_encode(['success' => $success, 'message' => $message]);
+    //       }
+    //       else{
+    //         $message = _l('updated_fail');
+    //         echo json_encode(['success' => $success, 'message' => $message]);
+    //       }
+    //     }
+    //   }
+    //   if(!isset($success)){
+    //     $this->data($data);
+    //     $this->view('share_file_view_client');
+    //     $this->layout();
+    //   }
+    // }
 
 
 
