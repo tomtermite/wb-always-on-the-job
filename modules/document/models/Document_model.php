@@ -10,6 +10,7 @@ class Document_model extends App_Model
 	 * @return html
 	 */
 	protected $ids = [];
+	protected $parent_ids = [];
 	public function tree_my_folder()
 	{
 		$data = $this->get_my_folder_by_staff_my_folder();
@@ -181,6 +182,16 @@ class Document_model extends App_Model
 	public function get_my_folder_by_parent_id($parent_id)
 	{
 		$this->db->where('parent_id', $parent_id);
+		return $this->db->get(db_prefix() . 'document_online_my_folder')->result_array();
+	}
+	/**
+	 * get my folder by parent id 
+	 * @param  int $parent_id
+	 * @return  array          
+	 */
+	public function get_my_folder_by_id($id)
+	{
+		$this->db->where('id', $id);
 		return $this->db->get(db_prefix() . 'document_online_my_folder')->result_array();
 	}
 	/**
@@ -659,7 +670,6 @@ class Document_model extends App_Model
 	 */
 	function get_root_ids($id)
 	{
-
 		$parent_ids = $this->get_my_folder_by_parent_id($id);
 		if (!empty($parent_ids)) {
 			foreach ($parent_ids as $id_root) {
@@ -667,6 +677,23 @@ class Document_model extends App_Model
 				$this->get_root_ids($id_root['id']);
 			}
 		}
+	}
+	function get_ids(){
+		return $this->ids;
+	}
+	function get_parent_ids($id)
+	{
+		
+		$get_parent_ids = $this->get_my_folder_by_id($id);		
+		if (!empty($get_parent_ids)) {
+			foreach ($get_parent_ids as $id_root) {
+				array_push($this->parent_ids, $id_root['id']);
+				$this->get_parent_ids($id_root['parent_id']);
+			}
+		}
+	}
+	function get_parentIds(){
+		return $this->parent_ids;
 	}
 	public function exit_object_share($data, $update)
 	{

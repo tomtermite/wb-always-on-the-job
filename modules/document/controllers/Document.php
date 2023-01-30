@@ -326,21 +326,21 @@ class Document extends AdminController
 		$response = [];
 		$response['status'] = 0;
 		$data = $this->input->post();
+		
+
 		if($data['parent_id'] > 0){
             $id = array();
-			$parent_ids = $this->document_model->get_my_folder_by_parent_id($data['parent_id']);
-			 if (!empty($parent_ids)) {
-				 foreach ($parent_ids as $id_root) {
-                  array_push($id,$id_root['id']);	 
-				 }
-				    $this->db->where_in('id', $id);
+			$parent_ids = $this->document_model->get_parent_ids($data['parent_id']);
+			$ids = $this->document_model->get_parentIds();	
+			array_push($ids,$data['parent_id']);
+				    $this->db->where_in('id', $ids);
+				    $this->db->where('flag_share',1);
 					$speadsheets = $this->db->get(db_prefix() . 'document_online_my_folder')->row();
-					if($speadsheets->flag_share == 1){
+					if($speadsheets){
 						$response['error'] = _l('error_parent_folder');
-						echo json_encode($response);exit;
+						
 					}
-			 }
-			
+			 echo json_encode($response);exit;
 		}
 
 		
