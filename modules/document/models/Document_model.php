@@ -441,6 +441,7 @@ class Document_model extends App_Model
 	 */
 	public function update_share($data)
 	{
+	
 		if (count($data['clients_share']) < count($data['client_groups_share'])) {
 			$count = count($data['client_groups_share']) - count($data['clients_share']);
 			for ($i = 0; $i < $count; $i++) {

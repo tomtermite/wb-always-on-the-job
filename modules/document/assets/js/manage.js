@@ -11,10 +11,19 @@
     name: "required",
   }, save_folder, {name : "Folder name is required."});
 
-  appValidateForm($("#share-form"), {
-    'staffs_share[0]':"required",
-    'clients_share[0]':"required",
-  }, save_share,{'staffs_share[0]' : "Please select staff.",'clients_share[0]' : "Please select client."});
+
+  if($('input[name="group_share_staff"]').prop("checked", true) && $('input[name="client_groups_share"]').prop("checked", true)
+  ){
+    appValidateForm($("#share-form"), {
+      'staffs_share[0]':"required",
+      'clients_share[0]':"required",
+    }, save_share,{'staffs_share[0]' : "Please select staff.",'clients_share[0]' : "Please select client."});
+  }else{
+    appValidateForm($("#share-form"), {
+    }, save_share);
+  }
+  
+ 
 
   appValidateForm($("#related-form"), {
     id: "required",
@@ -492,6 +501,7 @@
   // })
   $(document).ready(function () {
     $('input[name="group_share_staff"]').click(function () {
+
       if ($(this).prop("checked") == true) {
         $(".choosee-staff").removeClass("hide");
       } else if ($(this).prop("checked") == false) {

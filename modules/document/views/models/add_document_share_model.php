@@ -20,9 +20,9 @@
 						</div>
 						<div class="pull-left">
 							<div class="wrapper">
-								<input id="checkbox1" type="checkbox" name="group_share_staff" value="1" checked />
+								<input id="checkbox1" type="checkbox" name="group_share_staff" value="1"  />
 								<label for="checkbox1"><?php echo _l('staff') ?></label>
-								<input id="checkbox2" type="checkbox" name="group_share_client" value="2" checked />
+								<input id="checkbox2" type="checkbox" name="group_share_client" value="2" />
 								<label for="checkbox2"><?php echo _l('client') ?></label>
 							</div>
 						</div>

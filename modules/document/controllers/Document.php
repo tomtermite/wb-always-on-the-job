@@ -326,8 +326,6 @@ class Document extends AdminController
 		$response = [];
 		$response['status'] = 0;
 		$data = $this->input->post();
-		
-
 		if($data['parent_id'] > 0){
             $id = array();
 			$parent_ids = $this->document_model->get_parent_ids($data['parent_id']);
@@ -341,9 +339,7 @@ class Document extends AdminController
 						
 					}
 			 echo json_encode($response);exit;
-		}
-
-		
+		}	
 		if(!empty($data))
 		{
 	
